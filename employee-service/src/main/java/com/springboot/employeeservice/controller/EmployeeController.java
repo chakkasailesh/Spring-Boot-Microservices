@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import com.springboot.employeeservice.dto.APIResponseDTO;
+import com.springboot.employeeservice.dto.DepartmentDTO;
 import com.springboot.employeeservice.dto.EmployeeDTO;
 import com.springboot.employeeservice.service.EmployeeService;
 
@@ -20,7 +24,13 @@ import jakarta.validation.Valid;
 public class EmployeeController {
 
 	@Autowired
-	EmployeeService employeeService;
+	private EmployeeService employeeService;
+
+	@Autowired
+	private RestTemplate restTemplate;
+
+	@Autowired
+	private WebClient webClient;
 
 	@PostMapping
 	public ResponseEntity<EmployeeDTO> saveEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
@@ -28,7 +38,15 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long id) {
-		return ResponseEntity.ok(employeeService.getEmployeeById(id));
+	public ResponseEntity<APIResponseDTO> getEmployeeById(@PathVariable Long id) {
+		EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
+//		DepartmentDTO departmentDTO = restTemplate
+//				.getForEntity("http://localhost:8080/api/departments/" + employeeDTO.getDepartmentCode(),
+//						DepartmentDTO.class)
+//				.getBody();
+		DepartmentDTO departmentDTO = webClient.get()
+				.uri("http://localhost:8080/api/departments/" + employeeDTO.getDepartmentCode()).retrieve()
+				.bodyToMono(DepartmentDTO.class).block();
+		return ResponseEntity.ok(new APIResponseDTO(employeeDTO, departmentDTO));
 	}
 }
