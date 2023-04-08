@@ -18,5 +18,8 @@ public class EmployeeDTO {
 	@NotBlank(message = "Employee Email can't be blank")
 	@Email
 	private String email;
+	@NotBlank(message = "Department Code can't be blank")
 	private String departmentCode;
+	@NotBlank(message = "Organization Code can't be blank")
+	private String organizationCode;
 }

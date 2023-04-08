@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.springboot.employeeservice.dto.APIResponseDTO;
 import com.springboot.employeeservice.dto.DepartmentDTO;
 import com.springboot.employeeservice.dto.EmployeeDTO;
+import com.springboot.employeeservice.dto.OrganizationDTO;
 import com.springboot.employeeservice.entity.Employee;
 import com.springboot.employeeservice.exception.ResourceNotFoundException;
 import com.springboot.employeeservice.repository.EmployeeRepository;
@@ -54,10 +55,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 //				DepartmentDTO.class)
 //		.getBody();
 		DepartmentDTO departmentDTO = webClient.get()
-				.uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode()).retrieve()
+				.uri("http://localhost:9191/api/departments/" + employee.getDepartmentCode()).retrieve()
 				.bodyToMono(DepartmentDTO.class).block();
+		OrganizationDTO organizationDTO = webClient.get()
+				.uri("http://localhost:9191/api/organizations/" + employee.getOrganizationCode()).retrieve()
+				.bodyToMono(OrganizationDTO.class).block();
 //		DepartmentDTO departmentDTO = apiClient.getDepartment(employee.getDepartmentCode());
-		return new APIResponseDTO(mapper.map(employee, EmployeeDTO.class), departmentDTO);
+		return new APIResponseDTO(mapper.map(employee, EmployeeDTO.class), departmentDTO, organizationDTO);
 	}
 
 	public APIResponseDTO getDefaultDepartment(Long id, Exception exception) {
@@ -68,7 +72,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		departmentDTO.setCode("D01");
 		departmentDTO.setDescription("Default Department");
 		departmentDTO.setName("Default");
-		return new APIResponseDTO(mapper.map(employee, EmployeeDTO.class), departmentDTO);
+		OrganizationDTO organizationDTO = new OrganizationDTO();
+		organizationDTO.setOrganizationName("Default");
+		organizationDTO.setOrganizationDescription("Default Organization");
+		organizationDTO.setOrganizationCode("ORG01");
+		return new APIResponseDTO(mapper.map(employee, EmployeeDTO.class), departmentDTO, organizationDTO);
 	}
 
 }
