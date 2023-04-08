@@ -16,32 +16,43 @@ import org.springframework.web.bind.annotation.RestController;
 import com.springboot.departmentservice.dto.DepartmentDTO;
 import com.springboot.departmentservice.service.DepartmentService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Department Service - DepartmentController", description = "Department Controller exposes REST APIs for DEPARTMENT-SERVICE")
 @RestController
 @RequestMapping("/api/departments")
 public class DepartmentController {
 	@Autowired
 	DepartmentService departmentService;
 
+	@Operation(summary = "Get Departments REST API", description = "API to get all departments")
+	@ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
 	@GetMapping
 	public ResponseEntity<List<DepartmentDTO>> getAllDepartments() {
 		return ResponseEntity.ok(departmentService.getAllDepartmens());
 	}
 
-//	@GetMapping("/{id}")
-//	public ResponseEntity<DepartmentDTO> getDepartmentById(@PathVariable Long id) {
-//		return ResponseEntity.ok(departmentService.getDepartmentById(id));
-//	}
+	// @GetMapping("/{id}")
+	// public ResponseEntity<DepartmentDTO> getDepartmentById(@PathVariable Long
+	// id) {
+	// return ResponseEntity.ok(departmentService.getDepartmentById(id));
+	// }
 
 	@GetMapping("/{code}")
-	public ResponseEntity<DepartmentDTO> getDepartmentByCode(@PathVariable String code) {
+	public ResponseEntity<DepartmentDTO> getDepartmentByCode(
+			@PathVariable String code) {
 		return ResponseEntity.ok(departmentService.getDepartmentByCode(code));
 	}
 
 	@PostMapping
-	public ResponseEntity<DepartmentDTO> saveDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) {
-		return new ResponseEntity<>(departmentService.saveDepartment(departmentDTO), HttpStatus.CREATED);
+	public ResponseEntity<DepartmentDTO> saveDepartment(
+			@Valid @RequestBody DepartmentDTO departmentDTO) {
+		return new ResponseEntity<>(
+				departmentService.saveDepartment(departmentDTO),
+				HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/{id}")
